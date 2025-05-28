@@ -1,0 +1,269 @@
+2025-05-29 02:17:53,627 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.117.35:5000
+2025-05-29 02:17:53,627 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-29 02:17:53,628 - INFO -  * Restarting with stat
+2025-05-29 02:17:54,954 - WARNING -  * Debugger is active!
+2025-05-29 02:17:54,957 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:17:56,533 - INFO - 127.0.0.1 - - [29/May/2025 02:17:56] "GET /chat-page HTTP/1.1" 200 -
+2025-05-29 02:17:58,977 - INFO - 127.0.0.1 - - [29/May/2025 02:17:58] "GET /chat-history HTTP/1.1" 200 -
+2025-05-29 02:18:02,480 - ERROR - General AI Query handling error in handle_ai_query: "Unable to determine the intended type of the `dict`. For `Content`, a 'parts' key is expected. For `Part`, either an 'inline_data' or a 'text' key is expected. For `Blob`, both 'mime_type' and 'data' keys are expected. However, the provided dictionary has the following keys: ['system_instruction']"
+Traceback (most recent call last):
+  File "/home/melek/Desktop/financial_assistant/backend/app.py", line 340, in handle_ai_query
+    model = genai.GenerativeModel(**model_init_args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/melek/Desktop/financial_assistant/backend/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 97, in __init__
+    self._system_instruction = content_types.to_content(system_instruction)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/melek/Desktop/financial_assistant/backend/venv/lib/python3.12/site-packages/google/generativeai/types/content_types.py", line 291, in to_content
+    content = _convert_dict(content)
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/melek/Desktop/financial_assistant/backend/venv/lib/python3.12/site-packages/google/generativeai/types/content_types.py", line 176, in _convert_dict
+    raise KeyError(
+KeyError: "Unable to determine the intended type of the `dict`. For `Content`, a 'parts' key is expected. For `Part`, either an 'inline_data' or a 'text' key is expected. For `Blob`, both 'mime_type' and 'data' keys are expected. However, the provided dictionary has the following keys: ['system_instruction']"
+2025-05-29 02:18:02,616 - INFO - 127.0.0.1 - - [29/May/2025 02:18:02] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:19:20,531 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app.py', reloading
+2025-05-29 02:19:21,444 - INFO -  * Restarting with stat
+2025-05-29 02:20:29,194 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.117.35:5000
+2025-05-29 02:20:29,195 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-29 02:20:29,197 - INFO -  * Restarting with stat
+2025-05-29 02:20:30,983 - WARNING -  * Debugger is active!
+2025-05-29 02:20:30,986 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:20:31,083 - INFO - 127.0.0.1 - - [29/May/2025 02:20:31] "GET /chat-page HTTP/1.1" 200 -
+2025-05-29 02:20:33,100 - INFO - 127.0.0.1 - - [29/May/2025 02:20:33] "GET /chat-history HTTP/1.1" 200 -
+2025-05-29 02:20:52,796 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app.py', reloading
+2025-05-29 02:20:53,162 - INFO -  * Restarting with stat
+2025-05-29 02:20:54,992 - WARNING -  * Debugger is active!
+2025-05-29 02:20:54,996 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:20:57,814 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.117.35:5000
+2025-05-29 02:20:57,814 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-29 02:20:57,815 - INFO -  * Restarting with stat
+2025-05-29 02:20:59,110 - WARNING -  * Debugger is active!
+2025-05-29 02:20:59,113 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:20:59,132 - INFO - 127.0.0.1 - - [29/May/2025 02:20:59] "GET /chat-page HTTP/1.1" 200 -
+2025-05-29 02:20:59,532 - INFO - 127.0.0.1 - - [29/May/2025 02:20:59] "GET /chat-history HTTP/1.1" 200 -
+2025-05-29 02:21:03,276 - INFO - User 1 query to Gemini: hey
+2025-05-29 02:21:05,638 - INFO - Final AI response to user: Hello there! How can I help you with your finances today?
+
+2025-05-29 02:21:07,235 - INFO - 127.0.0.1 - - [29/May/2025 02:21:07] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:21:27,445 - INFO - User 1 query to Gemini: Hello, add income 3434 usd as salary category salary and descriopiton salary
+2025-05-29 02:21:28,687 - INFO - Gemini requested function call: add_transaction with args: {'amount': 3434.0, 'description': 'salary', 'type': 'income', 'currency': 'USD', 'category': 'salary'}
+2025-05-29 02:21:28,958 - INFO - Function add_transaction raw result: Income of 3434.0 USD for 'salary' added successfully at 2025-05-29 02:21.
+2025-05-29 02:21:28,958 - INFO - Sending tool responses back to Gemini: [{'function_response': {'name': 'add_transaction', 'response': {'result': "Income of 3434.0 USD for 'salary' added successfully at 2025-05-29 02:21."}}}]
+2025-05-29 02:21:30,326 - INFO - Final AI response to user: OK. Income of 3434.0 USD for 'salary' added successfully at 2025-05-29 02:21.
+
+2025-05-29 02:21:30,645 - INFO - 127.0.0.1 - - [29/May/2025 02:21:30] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:21:37,496 - INFO - User 1 query to Gemini: Hello, add income 3434 usd as salary category salary and descriopiton salary
+2025-05-29 02:21:38,509 - INFO - Final AI response to user: Hello!  I'm ready to assist you.
+
+To add your income transaction, I need a few more details. Could you please specify the exact date and time of this transaction?
+
+2025-05-29 02:21:39,824 - INFO - 127.0.0.1 - - [29/May/2025 02:21:39] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:21:43,910 - INFO - User 1 query to Gemini: how me alll my incomses from May 2nd, 2000, to January 4th, 2026, in usd
+2025-05-29 02:21:45,935 - INFO - Gemini requested function call: get_financial_summary with args: {'end_date': '2026-01-04', 'transaction_type': 'income', 'target_currency': 'USD', 'start_date': '2000-05-02'}
+2025-05-29 02:21:45,948 - INFO - Function get_financial_summary raw result: 3434.0
+2025-05-29 02:21:45,949 - INFO - Sending tool responses back to Gemini: [{'function_response': {'name': 'get_financial_summary', 'response': {'result': 3434.0}}}]
+2025-05-29 02:21:47,108 - INFO - Final AI response to user: Your total income from May 2nd, 2000, to January 4th, 2026, is $3434 USD.
+
+2025-05-29 02:21:48,039 - INFO - 127.0.0.1 - - [29/May/2025 02:21:48] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:21:57,186 - INFO - User 1 query to Gemini: show me alll my incomses from 2000 may to 2026 january
+2025-05-29 02:21:58,680 - INFO - Final AI response to user: To calculate your income from May 2000 to January 2026, I need a precise start date and end date.  May 2000 would be 2000-05-01 and January 2026 would be 2026-01-31.  Is this correct?
+
+2025-05-29 02:21:59,491 - INFO - 127.0.0.1 - - [29/May/2025 02:21:59] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:22:17,824 - INFO - User 1 query to Gemini: Hello, add expsnse  3434 usd as salary category salary and descriopiton salary ?
+2025-05-29 02:22:18,960 - INFO - Final AI response to user: Hello!  Before I can add that expense, I need a little more information.  Could you please provide the exact category and description for this transaction?
+
+2025-05-29 02:22:19,802 - INFO - 127.0.0.1 - - [29/May/2025 02:22:19] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:22:42,121 - INFO - User 1 query to Gemini: Hello, add expsnse  3434 usd as food category salary and descriopiton food ?
+2025-05-29 02:22:43,126 - INFO - Final AI response to user: Hello!  Before I can add the expense, I need a few more details. Please provide the specific category and description for this transaction.
+
+2025-05-29 02:22:43,195 - INFO - 127.0.0.1 - - [29/May/2025 02:22:43] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:22:52,932 - INFO - User 1 query to Gemini: category food
+2025-05-29 02:22:53,977 - INFO - Final AI response to user: What is the amount, currency, and description of the food transaction?  Also, is it income or expense?
+
+2025-05-29 02:22:54,300 - INFO - 127.0.0.1 - - [29/May/2025 02:22:54] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:24:25,109 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app.py', reloading
+2025-05-29 02:24:27,641 - INFO -  * Restarting with stat
+2025-05-29 02:24:31,155 - WARNING -  * Debugger is active!
+2025-05-29 02:24:31,160 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:24:34,238 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app.py', reloading
+2025-05-29 02:24:34,621 - INFO -  * Restarting with stat
+2025-05-29 02:24:36,669 - WARNING -  * Debugger is active!
+2025-05-29 02:24:36,676 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:25:11,251 - INFO - 127.0.0.1 - - [29/May/2025 02:25:11] "GET /chat-page HTTP/1.1" 200 -
+2025-05-29 02:25:12,341 - INFO - 127.0.0.1 - - [29/May/2025 02:25:12] "GET /chat-history HTTP/1.1" 200 -
+2025-05-29 02:25:23,817 - INFO - 127.0.0.1 - - [29/May/2025 02:25:23] "GET / HTTP/1.1" 200 -
+2025-05-29 02:25:43,474 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/routes/chat_routes.py', reloading
+2025-05-29 02:25:43,847 - INFO -  * Restarting with stat
+2025-05-29 02:25:45,523 - WARNING -  * Debugger is active!
+2025-05-29 02:25:45,528 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:27:41,261 - INFO - 127.0.0.1 - - [29/May/2025 02:27:41] "GET / HTTP/1.1" 200 -
+2025-05-29 02:27:59,269 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/config/config.py', reloading
+2025-05-29 02:28:00,115 - INFO -  * Restarting with stat
+2025-05-29 02:28:06,832 - WARNING -  * Debugger is active!
+2025-05-29 02:28:06,852 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:29:09,223 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/models/models.py', reloading
+2025-05-29 02:29:09,676 - INFO -  * Restarting with stat
+2025-05-29 02:29:13,274 - WARNING -  * Debugger is active!
+2025-05-29 02:29:13,407 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:29:21,222 - INFO - 127.0.0.1 - - [29/May/2025 02:29:21] "GET / HTTP/1.1" 200 -
+2025-05-29 02:29:22,939 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/exchange_service.py', reloading
+2025-05-29 02:29:23,878 - INFO -  * Restarting with stat
+2025-05-29 02:29:28,442 - WARNING -  * Debugger is active!
+2025-05-29 02:29:28,454 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:29:43,385 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/transaction_service.py', reloading
+2025-05-29 02:29:44,196 - INFO -  * Restarting with stat
+2025-05-29 02:29:46,511 - WARNING -  * Debugger is active!
+2025-05-29 02:29:46,517 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:30:18,086 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/config/config.py', reloading
+2025-05-29 02:30:18,457 - INFO -  * Restarting with stat
+2025-05-29 02:30:20,045 - WARNING -  * Debugger is active!
+2025-05-29 02:30:20,052 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:30:22,218 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/models/models.py', reloading
+2025-05-29 02:30:22,806 - INFO -  * Restarting with stat
+2025-05-29 02:30:25,057 - WARNING -  * Debugger is active!
+2025-05-29 02:30:25,060 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:30:26,104 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/exchange_service.py', reloading
+2025-05-29 02:30:26,564 - INFO -  * Restarting with stat
+2025-05-29 02:30:28,448 - WARNING -  * Debugger is active!
+2025-05-29 02:30:28,453 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:30:31,521 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/transaction_service.py', reloading
+2025-05-29 02:30:31,838 - INFO -  * Restarting with stat
+2025-05-29 02:30:33,677 - WARNING -  * Debugger is active!
+2025-05-29 02:30:33,681 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:30:55,039 - INFO - 127.0.0.1 - - [29/May/2025 02:30:55] "GET / HTTP/1.1" 200 -
+2025-05-29 02:31:13,707 - INFO - 127.0.0.1 - - [29/May/2025 02:31:13] "GET /chat-page HTTP/1.1" 200 -
+2025-05-29 02:31:14,260 - INFO - 127.0.0.1 - - [29/May/2025 02:31:14] "GET /chat-history HTTP/1.1" 200 -
+2025-05-29 02:31:25,820 - INFO - 127.0.0.1 - - [29/May/2025 02:31:25] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:32:16,524 - INFO - 127.0.0.1 - - [29/May/2025 02:32:16] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:32:26,788 - INFO - 127.0.0.1 - - [29/May/2025 02:32:26] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:32:37,677 - INFO - 127.0.0.1 - - [29/May/2025 02:32:37] "POST /chat HTTP/1.1" 200 -
+2025-05-29 02:33:54,925 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/chat_service.py', reloading
+2025-05-29 02:33:57,170 - INFO -  * Restarting with stat
+2025-05-29 02:33:58,412 - WARNING -  * Debugger is active!
+2025-05-29 02:33:58,418 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:34:00,519 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/chat_service.py', reloading
+2025-05-29 02:34:00,795 - INFO -  * Restarting with stat
+2025-05-29 02:34:02,722 - WARNING -  * Debugger is active!
+2025-05-29 02:34:02,725 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:34:14,883 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/report_service.py', reloading
+2025-05-29 02:34:15,777 - INFO -  * Restarting with stat
+2025-05-29 02:34:17,691 - WARNING -  * Debugger is active!
+2025-05-29 02:34:17,698 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:34:41,298 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/routes/chat_routes.py', reloading
+2025-05-29 02:34:42,110 - INFO -  * Restarting with stat
+2025-05-29 02:34:47,849 - WARNING -  * Debugger is active!
+2025-05-29 02:34:47,861 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:34:53,096 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/routes/transaction_routes.py', reloading
+2025-05-29 02:34:53,343 - INFO -  * Restarting with stat
+2025-05-29 02:34:54,384 - WARNING -  * Debugger is active!
+2025-05-29 02:34:54,386 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:35:03,455 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/__init__.py', reloading
+2025-05-29 02:35:04,470 - INFO -  * Restarting with stat
+2025-05-29 02:35:13,973 - WARNING -  * Debugger is active!
+2025-05-29 02:35:13,981 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:35:15,073 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/run.py', reloading
+2025-05-29 02:35:15,370 - INFO -  * Restarting with stat
+2025-05-29 02:35:19,402 - WARNING -  * Debugger is active!
+2025-05-29 02:35:19,408 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:35:20,487 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/run.py', reloading
+2025-05-29 02:35:21,475 - INFO -  * Restarting with stat
+2025-05-29 02:35:23,767 - WARNING -  * Debugger is active!
+2025-05-29 02:35:23,773 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:35:41,083 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/__init__.py', reloading
+2025-05-29 02:35:41,490 - INFO -  * Restarting with stat
+2025-05-29 02:35:43,468 - WARNING -  * Debugger is active!
+2025-05-29 02:35:43,472 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:36:41,656 - INFO - Database tables created successfully
+2025-05-29 02:36:41,676 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-29 02:36:41,676 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-29 02:36:41,677 - INFO -  * Restarting with stat
+2025-05-29 02:36:43,102 - INFO - Database tables created successfully
+2025-05-29 02:36:43,130 - WARNING -  * Debugger is active!
+2025-05-29 02:36:43,135 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:36:46,975 - INFO - 127.0.0.1 - - [29/May/2025 02:36:46] "[33mGET /chat-page HTTP/1.1[0m" 404 -
+2025-05-29 02:36:50,740 - INFO - 127.0.0.1 - - [29/May/2025 02:36:50] "[33mGET / HTTP/1.1[0m" 404 -
+2025-05-29 02:36:51,044 - INFO - 127.0.0.1 - - [29/May/2025 02:36:51] "[33mGET / HTTP/1.1[0m" 404 -
+2025-05-29 02:37:13,096 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/__init__.py', reloading
+2025-05-29 02:37:13,556 - INFO -  * Restarting with stat
+2025-05-29 02:37:16,609 - INFO - Database tables created successfully
+2025-05-29 02:37:16,625 - WARNING -  * Debugger is active!
+2025-05-29 02:37:16,628 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:37:19,001 - INFO - 127.0.0.1 - - [29/May/2025 02:37:19] "GET / HTTP/1.1" 200 -
+2025-05-29 02:37:35,171 - INFO - 127.0.0.1 - - [29/May/2025 02:37:35] "[33mGET /chat_history HTTP/1.1[0m" 404 -
+2025-05-29 02:38:01,834 - INFO - 127.0.0.1 - - [29/May/2025 02:38:01] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:38:03,747 - INFO - 127.0.0.1 - - [29/May/2025 02:38:03] "[35m[1mPOST /api/transaction HTTP/1.1[0m" 201 -
+2025-05-29 02:38:05,865 - INFO - 127.0.0.1 - - [29/May/2025 02:38:05] "GET /api/transaction/summary?user_id=1&year=2024&month=5&currency=USD HTTP/1.1" 200 -
+2025-05-29 02:38:45,035 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/report_service.py', reloading
+2025-05-29 02:38:47,223 - INFO -  * Restarting with stat
+2025-05-29 02:38:48,080 - INFO - Database tables created successfully
+2025-05-29 02:38:48,091 - WARNING -  * Debugger is active!
+2025-05-29 02:38:48,094 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:40:21,841 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/chat_service.py', reloading
+2025-05-29 02:40:22,065 - INFO -  * Restarting with stat
+2025-05-29 02:40:23,397 - INFO - Database tables created successfully
+2025-05-29 02:40:23,407 - WARNING -  * Debugger is active!
+2025-05-29 02:40:23,409 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:40:27,460 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/chat_service.py', reloading
+2025-05-29 02:40:29,642 - INFO -  * Restarting with stat
+2025-05-29 02:40:30,651 - INFO - Database tables created successfully
+2025-05-29 02:40:30,660 - WARNING -  * Debugger is active!
+2025-05-29 02:40:30,663 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:40:33,763 - INFO - Database tables created successfully
+2025-05-29 02:40:43,133 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/run.py', reloading
+2025-05-29 02:40:43,611 - INFO -  * Restarting with stat
+2025-05-29 02:40:45,106 - INFO - Database tables created successfully
+2025-05-29 02:40:45,126 - WARNING -  * Debugger is active!
+2025-05-29 02:40:45,130 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:40:48,869 - INFO - Database tables created successfully
+2025-05-29 02:40:50,382 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/run.py', reloading
+2025-05-29 02:40:50,737 - INFO -  * Restarting with stat
+2025-05-29 02:40:54,533 - INFO - Database tables created successfully
+2025-05-29 02:40:54,564 - WARNING -  * Debugger is active!
+2025-05-29 02:40:54,570 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:42:33,271 - INFO - Database tables created successfully
+2025-05-29 02:42:33,286 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-29 02:42:33,286 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-29 02:42:33,287 - INFO -  * Restarting with stat
+2025-05-29 02:42:34,866 - INFO - Database tables created successfully
+2025-05-29 02:42:34,882 - WARNING -  * Debugger is active!
+2025-05-29 02:42:34,886 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:42:36,847 - INFO - 127.0.0.1 - - [29/May/2025 02:42:36] "[35m[1mPOST /api/transaction HTTP/1.1[0m" 201 -
+2025-05-29 02:42:38,575 - INFO - 127.0.0.1 - - [29/May/2025 02:42:38] "[35m[1mPOST /api/transaction HTTP/1.1[0m" 201 -
+2025-05-29 02:42:39,029 - INFO - 127.0.0.1 - - [29/May/2025 02:42:39] "GET /api/transaction/summary?user_id=1&year=2024&month=5&currency=USD HTTP/1.1" 200 -
+2025-05-29 02:42:41,836 - INFO - 127.0.0.1 - - [29/May/2025 02:42:41] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:42:44,989 - INFO - 127.0.0.1 - - [29/May/2025 02:42:44] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:43:52,200 - INFO - 127.0.0.1 - - [29/May/2025 02:43:52] "GET / HTTP/1.1" 200 -
+2025-05-29 02:44:08,408 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/chat_service.py', reloading
+2025-05-29 02:44:11,042 - INFO -  * Restarting with stat
+2025-05-29 02:44:14,216 - INFO - Database tables created successfully
+2025-05-29 02:44:14,258 - WARNING -  * Debugger is active!
+2025-05-29 02:44:14,266 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:44:27,326 - INFO - 127.0.0.1 - - [29/May/2025 02:44:27] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:44:35,316 - INFO - 127.0.0.1 - - [29/May/2025 02:44:35] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:45:42,056 - ERROR - Error in chat endpoint: 400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 27 (char 26)
+2025-05-29 02:45:42,056 - INFO - 127.0.0.1 - - [29/May/2025 02:45:42] "[35m[1mPOST /api/chat HTTP/1.1[0m" 500 -
+2025-05-29 02:46:44,538 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/chat_service.py', reloading
+2025-05-29 02:46:44,721 - INFO -  * Restarting with stat
+2025-05-29 02:46:46,332 - INFO - Database tables created successfully
+2025-05-29 02:46:46,348 - WARNING -  * Debugger is active!
+2025-05-29 02:46:46,352 - INFO -  * Debugger PIN: 884-461-352
+2025-05-29 02:46:53,893 - INFO - 127.0.0.1 - - [29/May/2025 02:46:53] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:47:01,816 - INFO - 127.0.0.1 - - [29/May/2025 02:47:01] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:47:20,252 - INFO - 127.0.0.1 - - [29/May/2025 02:47:20] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:47:28,778 - INFO - 127.0.0.1 - - [29/May/2025 02:47:28] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:47:53,365 - INFO - 127.0.0.1 - - [29/May/2025 02:47:53] "POST /api/chat HTTP/1.1" 200 -
+2025-05-29 02:48:08,370 - INFO -  * Detected change in '/home/melek/Desktop/financial_assistant/backend/app/services/chat_service.py', reloading
+2025-05-29 02:48:10,672 - INFO -  * Restarting with stat
+2025-05-29 02:48:11,700 - INFO - Database tables created successfully
+2025-05-29 02:48:11,718 - WARNING -  * Debugger is active!
+2025-05-29 02:48:11,722 - INFO -  * Debugger PIN: 884-461-352
