@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Assistant Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Navigation -->
+        <nav class="bg-white shadow mb-8 rounded-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <h1 class="text-xl font-bold text-gray-800">Financial Assistant</h1>
+                        </div>
+                        <div class="ml-6 flex space-x-8">
+                            <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Dashboard
+                            </a>
+                            <a href="/chat-page" class="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Chat Assistant
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-3xl mx-auto">
+            <!-- Chat Header -->
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h1 class="text-xl font-semibold text-gray-800">Financial Assistant Chat</h1>
+                    <p class="text-sm text-gray-500 mt-1">Ask me anything about your finances</p>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="bg-white rounded-lg shadow mb-6 p-6 h-96 overflow-y-auto">
+                <!-- Welcome Message -->
+                <div class="mb-4 text-left">
+                    <div class="inline-block px-4 py-2 rounded-lg bg-blue-100 text-blue-800">
+                        Hello! I'm your financial assistant. How can I help you today?
+                    </div>
+                </div>
+                <!-- Messages will be dynamically added here -->
+            </div>
+
+            <!-- Chat Input -->
+            <div class="bg-white rounded-lg shadow p-4">
+                <form id="chat-form" class="flex space-x-4">
+                    <input type="text" id="message-input" 
+                           class="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="Type your message here...">
+                    <button type="submit" 
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.getElementById('chat-form');
+            const messageInput = document.getElementById('message-input');
+            const chatMessages = document.getElementById('chat-messages');
+
+            // Load chat history
+            fetch('/chat-history')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.history) {
+                        data.history.forEach(entry => {
+                            addMessage(entry.message, 'user');
+                            addMessage(entry.response, 'assistant');
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading chat history:', error));
+
+            function addMessage(message, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `mb-4 ${sender === 'user' ? 'text-right' : 'text-left'}`;
+                
+                const messageBubble = document.createElement('div');
+                messageBubble.className = `inline-block px-4 py-2 rounded-lg ${
+                    sender === 'user' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-200 text-gray-800'
+                }`;
+                messageBubble.textContent = message;
+                
+                messageDiv.appendChild(messageBubble);
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                
+                if (!message) return;
+
+                // Add user message to chat
+                addMessage(message, 'user');
+                messageInput.value = '';
+
+                // Send message to server
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.response) {
+                        addMessage(data.response, 'assistant');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    addMessage('Sorry, there was an error processing your message.', 'assistant');
+                });
+            });
+
+            // Focus the input field when the page loads
+            messageInput.focus();
+        });
+    </script>
+</body>
+</html>
