@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Financial Dashboard</h1>
+
+        {% if error_message %}
+            <p class="error">Error: {{ error_message }}</p>
+        {% endif %}
+
+        <div class="summary">
+            <h2>Financial Summary ({{ summary_currency }})</h2>
+            <div><strong>Total Income:</strong> {{ total_income }}</div>
+            <div><strong>Total Expenses:</strong> {{ total_expenses }}</div>
+            <div><strong>Net Balance:</strong> {{ net_balance }}</div>
+        </div>
+
+        <div class="transactions">
+            <h2>Recent Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if recent_transactions %}
+                        {% for tx in recent_transactions %}
+                            <tr>
+                                <td>{{ tx.date }}</td>
+                                <td>{{ tx.type }}</td>
+                                <td>{{ tx.category }}</td>
+                                <td>{{ tx.description }}</td>
+                                <td>{{ tx.amount }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5">No recent transactions found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <p><a href="{{ url_for('main.chat_page') }}">Go to Chat</a></p>
+        <p><a href="{{ url_for('api.request_pdf_report_endpoint') }}" class="button">Generate PDF Report</a></p>
+        <p><a href="{{ url_for('api.get_csv_report_endpoint') }}" class="button">Download CSV Report</a></p>
+    </div>
+</body>
+</html>

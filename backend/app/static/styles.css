@@ -1,0 +1,282 @@
+/* General Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a3c6d;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a3c6d;
+    margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Buttons */
+button, a.button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover, a.button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Container for Content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Financial Dashboard Styles */
+.summary {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 2rem;
+}
+
+.summary div {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.summary strong {
+    color: #1a3c6d;
+}
+
+/* Transactions Table */
+.transactions table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.transactions th,
+.transactions td {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.transactions th {
+    background-color: #1a3c6d;
+    color: white;
+    font-weight: 600;
+}
+
+.transactions tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.transactions tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Chat Page Styles */
+#chat-box {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 1.5rem;
+    height: 70vh;
+}
+
+.message {
+    padding: 10px 15px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.ai-message {
+    background-color: #e9f7ef;
+    color: #1a3c6d;
+    margin-right: auto;
+}
+
+.loading {
+    font-style: italic;
+    color: #6c757d;
+    background-color: #f8f9fa;
+}
+
+#input-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+#user-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+#send-button {
+    padding: 12px 20px;
+}
+
+/* Error Message */
+.error {
+    color: #dc3545;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    .summary div {
+        font-size: 1rem;
+    }
+
+    .transactions th,
+    .transactions td {
+        font-size: 0.85rem;
+        padding: 10px;
+    }
+
+    #chat-box {
+        height: 60vh;
+    }
+
+    #user-input {
+        font-size: 0.9rem;
+    }
+
+    #send-button {
+        padding: 10px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .transactions table {
+        font-size: 0.8rem;
+    }
+
+    .transactions th,
+    .transactions td {
+        padding: 8px;
+    }
+
+    #input-area {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    #user-input,
+    #send-button {
+        width: 100%;
+    }
+}
+/* Microphone Button */
+#mic-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#mic-button:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+#mic-button svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* Adjust input area for microphone button */
+#input-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+@media (max-width: 480px) {
+    #mic-button {
+        padding: 10px;
+    }
+}

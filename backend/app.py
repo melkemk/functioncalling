@@ -329,91 +329,215 @@ def handle_ai_query(user_id: int, query_text: str) -> str:
         logging.warning("Gemini API key is not configured or is a placeholder.")
         return "AI Assistant is not available: API key not configured."
     try:
-        # Initialize Gemini
-        genai.configure(api_key=GEMINI_API_KEY)
+        model_init_args = {
+            'model_name': 'gemini-1.5-flash-latest',
+            # --- START REFINED SYSTEM INSTRUCTION ---
+            'system_instruction': (
+                "You are a precise, proactive, and highly autonomous financial assistant named 'FinAssist'. "
+                "Your primary role is to help users manage and understand their finances by intelligently calling the available tools. "
+                "You MUST proactively interpret user queries to extract all necessary parameters for tool calls. "
+
+                "TOOL CALLING - GENERAL RULES: "
+                "For each tool, its description specifies 'required' parameters. You MUST ensure all required parameters have values before successfully calling the tool. "
+                "  - If the user's query provides a value, extract and use it. "
+                "  - If a value can be reasonably and confidently inferred (e.g., 'dollars' implies 'USD', 'today' for a date if unspecified for a new transaction), infer it. "
+                "  - If a required parameter's value is missing from the user's query AND cannot be confidently inferred: "
+                "    - For `add_transaction`: If 'category' or 'description' are missing, you MUST explicitly ask the user for *both* specific pieces of missing information *before* calling the tool. For other missing required fields (`amount`, `currency`, `type`), if not provided or inferable, ask the user clearly for the missing information. "
+                "    - For `get_financial_summary`: If `transaction_type`, `start_date`, or `end_date` are missing and not inferable, ask the user for the specific missing information. "
+                "    - For other tools: If required parameters are missing and not inferable, inform the user what information is needed. "
+                "DO NOT call a tool if its required parameters are still missing after your extraction/inference and you haven't received the needed information from the user."
+                "DO NOT ask clarifying questions for information that *can* be reasonably inferred or is listed as optional and not provided. "
+                "If the user provides information that allows you to perform a tool action, confirm the action *after* it's done based on the tool's result."
+
+                "CRITICAL INSTRUCTION FOR CURRENT DATE/TIME QUERIES AND DEFAULTS: "
+                "When users ask about the current date, time, or day of the week, ALWAYS use the `get_current_datetime()` function. "
+                "This function provides accurate current date and time information. Use this information directly in your response to the user. "
+                "Additionally, when a tool requires the current date or time (e.g., defaulting date/time for `add_transaction` when not specified, or calculating relative dates like 'yesterday', 'last month'), you MUST first call the `get_current_datetime()` tool to get the accurate current information before determining the parameter values for the other tool."
+
+                "CRITICAL INSTRUCTION FOR CURRENCY CODES (Exchange Rates & Transactions): "
+                "When a user query involves country names, specific currencies by name, or common currency understanding (e.g., 'dollars' usually means USD, 'pounds' usually GBP, 'euro' is EUR, 'Birr' usually ETB), "
+                "you MUST independently identify and use the correct 3-letter ISO currency codes (e.g., USD, ETB, KES, EUR, GBP, JPY, CNY, INR, CAD, AUD). ALWAYS use UPPERCASE for currency codes when calling tools. "
+                "DO NOT ask the user for these codes if the country or currency name is given or clearly implied. If a country/currency name is mentioned and you are unsure of the 3-letter code, make an educated guess based on common knowledge or state that you are inferring a common code."
+
+                "DATE AND TIME HANDLING (Transactions & Summaries): "
+                "Tool functions require dates in YYYY-MM-DD format and times in HH:MM format. "
+                "You MUST autonomously convert all natural language date and time references into these precise formats. Do not ask the user for reformatting if your inference is sound. Use `get_current_datetime` to get the current date/time if needed for calculations or defaults."
+
+                "General Natural Language Dates: For terms like 'today', 'yesterday', 'last Tuesday', 'next Monday', 'tomorrow', specific dates like 'January 5th' or 'May 10 2023', you must calculate the exact YYYY-MM-DD date. If a year isn't specified for a date like 'March 15th', assume the current year unless context implies otherwise (e.g., 'last March 15th' would refer to the previous year's March 15th). Combine date and time if both are given (e.g., 'yesterday at 3pm')."
+
+                "Specific Instructions for `get_financial_summary` Date Ranges: "
+                "  - For queries about 'all time' totals (e.g., 'what is my total income ever?', 'summary all time'): "
+                "    You MUST ask the user for a practical start year for their records (e.g., 'To calculate your all-time income, could you please provide a start year for your records, like 2000?'). DO NOT attempt to use an extremely early default date yourself like '1900-01-01' without confirming a start year with the user."
+                "  - For ranges specified by months and years (e.g., 'income in January 2023', 'summary for Feb 2024', 'January 2000 to February 2025'): "
+                "    The `start_date` is the *first day* of the starting month/year (e.g., '2023-01-01' for 'January 2023', '2000-01-01' for 'January 2000'). "
+                "    The `end_date` is the *last day* of the ending month/year (e.g., '2023-01-31' for 'January 2023', '2025-02-28' for 'February 2025'). You must correctly determine the last day, accounting for leap years. "
+                "  - For ranges specified only by years (e.g., 'income from 2020 to 2022', 'expenses during 2021-2023'): "
+                "    The `start_date` is the first day of the start year (e.g., '2020-01-01'). "
+                "    The `end_date` is the *last day* of the end year (e.g., '2022-12-31'). You must correctly determine this last day. "
+                "  - If a single year is mentioned (e.g., 'income in 2021', 'expenses for 2023'): "
+                "    The `start_date` is 'YYYY-01-01' and `end_date` is 'YYYY-12-31' for that year. "
+                "  - For specific dates or relative ranges like 'last month', 'this month', 'this year', 'past 30 days', 'since last Tuesday': "
+                "    Calculate the precise `start_date` and `end_date` (YYYY-MM-DD) based on the current date (obtained using `get_current_datetime`). "
+                "Always provide both `start_date` and `end_date` in YYYY-MM-DD format to the `get_financial_summary` tool."
+
+                "Specific Instructions for `add_transaction` Date and Time: "
+                "  - If no date is specified by the user, default the `date` parameter to today's date (YYYY-MM-DD). Use `get_current_datetime` to obtain this. "
+                "  - If no time is specified, default the `time` parameter to the current time (HH:MM). Use `get_current_datetime` to obtain this. "
+                "  - If natural language like 'yesterday at 3pm' or 'Jan 5th 9am' is used, parse and convert to YYYY-MM-DD and HH:MM format for the respective `date` and `time` parameters. Ensure you calculate the correct date (e.g., yesterday's date based on current date)."
+
+                "TOOL PARAMETER REQUIREMENTS (reiteration & specifics): "
+                "  - `get_exchange_rate`: `from_currency`, `to_currency` (both 3-letter uppercase ISO codes). "
+                "  - `add_transaction`: `amount` (number), `currency` (3-letter uppercase), `category` (string), `type` ('income' or 'expense'), `description` (string). `date` (optional YYYY-MM-DD), `time` (optional HH:MM). Remember: `category` and `description` ARE REQUIRED by the tool. If not provided or inferable from the user's *current turn* or previous context, ASK the user for *both* specifically before calling. Default date/time if not provided using `get_current_datetime`. "
+                "  - `get_financial_summary`: `transaction_type` ('income' or 'expense'), `start_date` (YYYY-MM-DD), `end_date` (YYYY-MM-DD). `target_currency` (optional 3-letter uppercase, defaults to USD). Handle date range parsing as instructed above. "
+                "  - `generate_pdf_report`: No parameters. "
+                "  - `get_current_datetime`: No parameters. Use whenever current date/time is needed for response or tool parameters."
+
+                "RESPONSE GUIDELINES: "
+                "1. After successfully calling a tool, present the results from the function return value in a clear, human-readable sentence or summary. Always state currency explicitly if the tool returned currency information or if you converted to a target currency. "
+                "2. If a tool function returns an error string, explain the error clearly to the user in simple terms. If possible, suggest how they might fix their query or inform them if it's a system issue. "
+                "3. For `generate_pdf_report`, after receiving the success message, confirm generation and state that a download link is available (the interface will provide it). Example: 'I've generated the PDF report summarizing your finances.' "
+                "4. Be concise. A simple confirmation is often sufficient after a successful action like adding a transaction. "
+                "5. (Covered by general tool calling rules) If required information is missing *and not inferable*, ask for it *before* calling the tool, specifying *exactly* what is needed. "
+                "6. After executing a function and receiving its result, ALWAYS provide a final textual response to the user summarizing the outcome or presenting the data. "
+                "7. If the user asks a simple non-financial question (like 'hello', 'how are you'), respond appropriately without trying to call a financial tool."
+            )
+            # --- END REFINED SYSTEM INSTRUCTION ---
+        }
+        if SAFETY_SETTINGS: # Pass safety_settings only if it's not an empty dict
+            model_init_args['safety_settings'] = SAFETY_SETTINGS
         
-        # Create the model with proper configuration
-        model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash-latest',
-            generation_config={
-                'temperature': 0.7,
-                'top_p': 0.8,
-                'top_k': 40,
-            }
-        )
-        
-        # Get chat history for context
-        history = ChatHistory.query.filter_by(user_id=user_id)\
-            .order_by(ChatHistory.timestamp.desc())\
-            .limit(5)\
-            .all()
-        
-        # Build conversation context
-        context = "\n".join([f"User: {h.message}\nAssistant: {h.response}" for h in reversed(history)])
-        
-        # Process transaction commands with more flexible rules
-        if any(keyword in query_text.lower() for keyword in ['add income', 'add expense']):
-            try:
-                # Parse transaction details with more flexible rules
-                parts = query_text.lower().split()
-                if 'add income' in query_text.lower():
-                    amount = float(parts[2])
-                    currency = parts[3].upper()
-                    category = parts[6] if len(parts) > 6 else 'general'
-                    description = ' '.join(parts[8:]) if len(parts) > 8 else category
-                    
-                    # Create transaction with current date/time if not specified
-                    transaction = Transaction(
-                        user_id=user_id,
-                        amount=amount,
-                        currency=currency,
-                        category=category,
-                        type='income',
-                        description=description,
-                        date=datetime.utcnow()
-                    )
-                    db.session.add(transaction)
-                    db.session.commit()
-                    
-                    return f"OK. Income of {amount} {currency} for '{category}' added successfully at {transaction.date.strftime('%Y-%m-%d %H:%M')}."
-                    
-                elif 'add expense' in query_text.lower():
-                    amount = float(parts[2])
-                    currency = parts[3].upper()
-                    category = parts[6] if len(parts) > 6 else 'general'
-                    description = ' '.join(parts[8:]) if len(parts) > 8 else category
-                    
-                    # Create transaction with current date/time if not specified
-                    transaction = Transaction(
-                        user_id=user_id,
-                        amount=amount,
-                        currency=currency,
-                        category=category,
-                        type='expense',
-                        description=description,
-                        date=datetime.utcnow()
-                    )
-                    db.session.add(transaction)
-                    db.session.commit()
-                    
-                    return f"OK. Expense of {amount} {currency} for '{category}' added successfully at {transaction.date.strftime('%Y-%m-%d %H:%M')}."
-                    
-            except Exception as e:
-                db.session.rollback()
-                return f"I apologize, but I couldn't process the transaction: {str(e)}"
-        
-        # For non-transaction queries, use the AI model with context
+        model = genai.GenerativeModel(**model_init_args)
+
+        available_functions = {
+            'get_exchange_rate': get_exchange_rate,
+            'add_transaction': lambda **args_inner: add_transaction(user_id=user_id, **args_inner),
+            'get_financial_summary': lambda **args_inner: get_total_by_type(user_id=user_id, **args_inner),
+            'generate_pdf_report': lambda: generate_pdf_report(user_id=user_id),
+            'get_current_datetime': get_current_datetime
+        }
+
+        # For multi-turn conversations, you might want to load past history here
+        # For this example, we keep it simple with a fresh chat per query
         chat = model.start_chat(history=[])
-        response = chat.send_message(f"{context}\nUser: {query_text}")
         
-        if response and response.text:
-            return response.text
-        else:
-            return "I received your message, but I'm not sure how to help with that. Could you please rephrase or ask a specific financial question?"
+        logging.info(f"User {user_id} query to Gemini: {query_text}")
+        
+        # Step 1: Send the user query to the model for analysis and potential tool call
+        response = chat.send_message(query_text, tools=[{'function_declarations': TOOL_DECLARATIONS}])
+        
+        final_text = ""
+        tool_calls = []
+
+        # Check if the response contains tool calls or text
+        if response and response.parts:
+            for part in response.parts:
+                if part.function_call:
+                    tool_calls.append(part.function_call)
+                if hasattr(part, 'text') and part.text:
+                    final_text += part.text # Accumulate text parts if any
+
+        # Step 2: If tool calls are present, execute them
+        if tool_calls:
+            tool_responses = []
+            for fc in tool_calls:
+                func_name = fc.name
+                args = {key: value for key, value in fc.args.items()}
+                logging.info(f"Gemini requested function call: {func_name} with args: {args}")
+
+                if func_name in available_functions:
+                    try:
+                        # Execute the function
+                        function_result = available_functions[func_name](**args)
+                        logging.info(f"Function {func_name} raw result: {function_result}")
+
+                        # Prepare the tool response for the model
+                        # Use a standard structure, but handle specific cases if needed
+                        tool_response_content = {"result": function_result}
+                        # Special handling for PDF generation response, as per prompt instructions
+                        if func_name == 'generate_pdf_report':
+                             tool_response_content = {"result": f"PDF report generated successfully: {function_result}."} # Pass filename for confirmation
+
+                        tool_responses.append({
+                            "function_response": {
+                                "name": func_name,
+                                "response": tool_response_content
+                            }
+                        })
+
+                    except Exception as e:
+                        logging.error(f"Error executing function {func_name} locally: {str(e)}", exc_info=True)
+                        # Add an error response to the tool_responses list
+                        tool_responses.append({
+                            "function_response": {
+                                "name": func_name,
+                                "response": {"error": f"Execution error: {str(e)}"}
+                            }
+                        })
+                else:
+                    logging.error(f"Unknown function requested by Gemini: {func_name}")
+                    tool_responses.append({
+                        "function_response": {
+                            "name": func_name,
+                            "response": {"error": f"Unknown function: {func_name}"}
+                        }
+                    })
             
+            # Step 3: Send the tool results back to the model
+            if tool_responses:
+                 logging.info(f"Sending tool responses back to Gemini: {tool_responses}")
+                 # If the model had an initial text response AND tool calls,
+                 # send only the tool responses back first. The model should
+                 # then generate a final text response based on the tool results.
+                 # If the model only had tool calls, send the tool responses.
+                 try:
+                    response = chat.send_message(tool_responses)
+                    # After sending tool results, the model should generate a final text response
+                    final_text = "" # Clear previous text if any
+                    if response and response.parts:
+                        for part in response.parts:
+                            if hasattr(part, 'text') and part.text:
+                                final_text += part.text
+                            # If the model tries to call tools *again* after tool responses,
+                            # you might need a loop or handle it based on your desired flow.
+                            # For this improvement, we assume it will produce text after results.
+                 except Exception as e:
+                      logging.error(f"Error sending tool responses or getting follow-up response: {str(e)}", exc_info=True)
+                      final_text = f"An error occurred after executing the requested functions: {str(e)}"
+
+
+        # Step 4: Return the final text response
+        if not final_text: # Fallback if AI gives no text response at any stage
+            logging.warning(f"Gemini final response text is empty. Response parts: {response.parts if response else 'No response object'}. Tool calls attempted: {len(tool_calls)}")
+            if tool_calls: # If tools were attempted but no final text
+                executed_func_names = ", ".join([tc['function_response']['name'] for tc in tool_responses if 'function_response' in tc])
+                # Summarize results from tool_responses if possible, otherwise give a generic message
+                # This is a basic fallback; a more sophisticated one would parse tool_responses results
+                final_text = f"I executed the requested actions ({executed_func_names}), but I couldn't formulate a detailed summary. Please check the relevant dashboard sections."
+            elif query_text.strip().lower() in ["hey", "hi", "hello", "how are you", "what's up"]: # Simple greetings
+                final_text = "Hello! I'm your financial assistant. How can I help you today?"
+            else: # Generic fallback for unhandled queries
+                final_text = "I received your message, but I'm not sure how to help with that. Could you please rephrase or ask a specific financial question?"
+
+        logging.info(f"Final AI response to user: {final_text}")
+        return final_text
+
+    except google.api_core.exceptions.NotFound as e:
+        logging.error(f"Model not found or API version issue: {str(e)}", exc_info=True)
+        current_model_name = model_init_args.get('model_name', 'the configured model') if 'model_init_args' in locals() else 'the configured model'
+        return f"AI Assistant Error: The AI model ('{current_model_name}') was not found or is not supported. Please check model name and API configuration."
+    except google.api_core.exceptions.InvalidArgument as e:
+        logging.error(f"InvalidArgument error with Gemini API: {str(e)}", exc_info=True)
+        return f"AI Assistant Error: Invalid argument sent to the API. Details: {str(e)}"
     except Exception as e:
-        logging.error(f"General AI Query handling error in handle_ai_query: {str(e)}")
-        return f"I apologize, but I encountered an error: {str(e)}"
+        logging.error(f"General AI Query handling error in handle_ai_query: {str(e)}", exc_info=True)
+        err_str = str(e).lower()
+        if "api key" in err_str or "permission_denied" in err_str or "unauthenticated" in err_str:
+            return "AI Assistant Error: API key problem or authentication failure. Verify server configuration."
+        if "quota" in err_str or "resource_exhausted" in err_str:
+            return "AI Assistant Error: API usage quota likely exceeded. Please try again later or check your quota."
+        return "An unexpected error occurred while communicating with the AI assistant. Please check logs for details."
+
+
 
 @app.route('/')
 def dashboard_view():
@@ -606,4 +730,4 @@ if __name__ == '__main__':
             for tx_data in transactions_data: db.session.add(Transaction(**tx_data))
             db.session.commit()
             print("Demo user and sample transactions created.")
-    app.run(debug=True, host='0.0.0.0', port=5000)   
+    app.run(debug=True, host='0.0.0.0', port=5001)    

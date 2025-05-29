@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinAssist Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Chat with FinAssist</h1>
+
+        <div id="chat-box">
+            <div class="ai-message message">Hello! I'm your financial assistant. How can I help you today?</div>
+        </div>
+
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Type or speak your financial question or request...">
+            <button id="mic-button" title="Start Voice Input"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15C13.6569 15 15 13.6569 15 12V6C15 4.34315 13.6569 3 12 3C10.3431 3 9 4.34315 9 6V12C9 13.6569 10.3431 15 12 15Z" fill="currentColor"/><path d="M19 11V12C19 15.3137 16.3137 18 13 18H11C7.68629 18 5 15.3137 5 12V11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+            <button id="send-button">Send</button>
+        </div>
+        <div id="voice-error" class="error" style="display: none;">Speech recognition is not supported in this browser or no microphone is detected.</div>
+
+        <p><a href="{{ url_for('main.dashboard_view') }}">Back to Dashboard</a></p>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const micButton = document.getElementById('mic-button');
+        const voiceError = document.getElementById('voice-error');
+
+        // Speech Recognition Setup
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let isRecognizing = false;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US'; // Default language
+            recognition.continuous = true; // Keep recognizing until stopped
+            recognition.interimResults = true; // Show interim results
+
+            // Handle recognition results
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                userInput.value = finalTranscript + interimTranscript;
+
+                // Optionally auto-send final transcript
+                if (finalTranscript && !interimTranscript) {
+                    sendMessage();
+                    recognition.stop();
+                }
+            };
+
+            // Handle recognition start
+            recognition.onstart = () => {
+                isRecognizing = true;
+                micButton.style.backgroundColor = '#ff2c4f'; // Indicate active
+                micButton.querySelector('svg').style.fill = '#fff';
+                userInput.placeholder = 'Speaking...';
+            };
+
+            // Handle recognition end
+            recognition.onend = () => {
+                isRecognizing = false;
+                micButton.style.backgroundColor = '';
+                micButton.querySelector('svg').style.fill = '';
+                userInput.placeholder = 'Type or speak your financial question or request...';
+            };
+
+            // Handle errors
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                voiceError.textContent = `Error: ${event.error}. Please try again or check microphone permissions.`;
+                voiceError.style.display = 'block';
+                recognition.stop();
+            };
+
+            // Toggle recognition on mic button click
+            micButton.addEventListener('click', () => {
+                if (isRecognizing) {
+                    recognition.stop();
+                } else {
+                    voiceError.style.display = 'none';
+                    recognition.start();
+                }
+            });
+        } else {
+            micButton.style.display = 'none';
+            voiceError.textContent = 'Speech recognition is not supported in this browser.';
+            voiceError.style.display = 'block';
+        }
+
+        // Existing sendMessage function
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage('user', message);
+            userInput.value = '';
+
+            const loadingMessage = document.createElement('div');
+            loadingMessage.classList.add('ai-message', 'message', 'loading');
+            loadingMessage.textContent = 'FinAssist is thinking...';
+            chatBox.appendChild(loadingMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch('{{ url_for('api.chat_endpoint') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                chatBox.removeChild(loadingMessage);
+
+                if (data.error) {
+                    addMessage('ai', 'Error: ' + data.error);
+                } else {
+                    addMessage('ai', data.response);
+                    if (data.response.includes("PDF report generated successfully")) {
+                        alert("PDF report generated. Check browser developer console or network tab for the filename/URL, or use the dedicated 'Generate PDF' link on the dashboard for direct access.");
+                        console.log("PDF Report message received:", data.response);
+                    }
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                chatBox.removeChild(loadingMessage);
+                addMessage('ai', 'Sorry, there was an error communicating with the assistant.');
+            }
+        }
+
+        // Existing addMessage function
+        function addMessage(sender, text) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender + '-message');
+            messageElement.textContent = text;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Existing event listeners
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Existing loadChatHistory function
+        async function loadChatHistory() {
+            try {
+                const response = await fetch('{{ url_for('api.get_chat_history_endpoint') }}');
+                const data = await response.json();
+                if (data.history) {
+                    chatBox.innerHTML = '';
+                    data.history.forEach(entry => {
+                        addMessage('user', entry.message);
+                        addMessage('ai', entry.response);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading chat history:', error);
+            }
+        }
+
+        loadChatHistory();
+    </script>
+</body>
+</html>
